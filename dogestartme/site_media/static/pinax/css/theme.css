@@ -1,0 +1,25 @@
+body {
+  padding-top: 80px;
+  position: relative;
+  /*font-family: "Comic Sans","Comic Sans MS",Chalkboard,ChalkboardSE-Regular,"Marker Felt",Purisa,"URW Chancery L",cursive!important;*/
+}
+
+h1, h2, h3, h4, h5, h6, h7, h8 {
+	  /*font-family: "Comic Sans","Comic Sans MS",Chalkboard,ChalkboardSE-Regular,"Marker Felt",Purisa,"URW Chancery L",cursive!important;*/
+
+}
+section {
+  /*padding-top: 60px;*/
+}
+.modal form {
+  margin-bottom: 0px;
+}
+#footer {
+  margin-top: 80px;
+}
+#footer p {
+  margin-bottom: 0;
+}
+#footer p.right {
+  float: right;
+}

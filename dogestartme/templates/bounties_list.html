@@ -1,0 +1,65 @@
+{% for bounty in bounties %}
+
+
+			{% if not bounty.funded and bounty.author == user.account %}
+				<div id="id_fund_{{bounty.pk}}" class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+				  <div class="modal-dialog modal-sm">
+				    <div class="modal-content">
+				        <div class="modal-header">
+				          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				          <h4 class="modal-title" id="mySmallModalLabel">Fund your Bounty</h4>
+				        </div>
+				                <div class="modal-body">
+
+				      Your deposit address for this bounty is: {{bounty.address}}
+				      </div>
+				    </div>
+				  </div>
+				</div>
+			{% endif %}
+
+			<span href="#" class="list-group-item {% if not bounty.funded %}list-group-item-danger{% endif %} row">
+				<div class="col-md-5">
+
+				<span class="fa fa-plus"></span>
+					<a href="#" onclick="$('#bounty_descr_{{bounty.pk}}').toggle(500);return false;">{{bounty.title}}</a>
+					<div style="display:none" id="bounty_descr_{{bounty.pk}}">{{bounty.description|linebreaks}}
+					<a href="{% url "view_bounty" bounty.pk %}" class="btn btn-info btn-sm">View/Apply</a> </div>
+				</div>
+				<div class="col-md-1">
+					{% if bounty.completed %}
+					<span class="badge alert-warning">
+						completed
+					</span>
+					{% else %}
+						{% if bounty.bountymessage_set.all.count == 0 %}
+						<span class="badge alert-success">
+							0 redeems!
+						</span>
+						{% else %}
+						<span class="badge alert-info">
+							{{bounty.bountymessage_set.all.count}} redeem/s
+						</span>
+						{% endif %}
+					{% endif %}
+				</div>
+				<div class="col-md-4">&nbsp;
+				{% if not bounty.funded %}
+				<a href="#" class="btn btn-danger btn-xs" data-toggle="modal" data-target="#id_fund_{{bounty.pk}}">Fund</a>
+				{% endif %}
+					by <b>{{bounty.author}}</b> on
+					<i>{{bounty.created|date:"SHORT_DATE_FORMAT" }}
+					
+					{{bounty.created|time:"H:i" }}
+</i>
+				</div>
+
+					<span class="badge">
+					Ð {{bounty.amount}}
+					</span>
+	
+			</span>
+			{% empty %}
+			<span href="#" class="list-group-item  row">
+There are no more bounties here.
+</span>			{% endfor %}

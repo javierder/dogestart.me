@@ -1,0 +1,59 @@
+{% extends "site_base.html" %}
+
+{% load url from future %}
+{% load bootstrap %}
+
+{% block body_class %}account account-settings{% endblock %}
+
+{% block head_title %}Withdraw{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-md-6">
+            <legend>List of non-withdrawn transactions</legend>
+ <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Title</th>
+          <th>Amount</th>
+          <th>date</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for log in earnlog %}
+        <tr>
+          <td>{{log.bounty.pk}}</td>
+          <td>{{log.bounty.title}}</td>
+          <td>Ð {{log.amount}}</td>
+          <td>{{log.message.created|date:"SHORT_DATE_FORMAT"}}</td>
+        </tr>
+        {% empty %}
+        <tr>
+        <td colspan="4" class="alert-danger">
+            There are no transactions to withdraw
+        </tr>
+       {% endfor %}
+       <tr class="alert-success">
+       <td colspan="2"><b>Total:</b></td>
+       <td colspan="1">
+       Ð {{total}}
+       </td><td colspan="1"></td>
+       </tr>
+      </tbody>
+    </table>
+
+        </div>
+        <div class="col-md-4">
+            <form method="POST" action="{% url "withdraw" %}">
+                <legend>Withdraw</legend>
+                <div class="form-group">
+                <label for="id_toaddress">To Address:</label>
+                <input id="id_toaddress" name="address" class="form-control" type="text" />
+                </div>
+                {% csrf_token %}
+                <button class="btn btn-primary" type="submit">Withdraw</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,162 @@
+{% extends "banner_base.html" %}
+
+{% load i18n %}
+{% load bootstrap %}
+
+{% block head_title %}{% trans "Welcome" %}{% endblock %}
+
+{% block body_class %}home{% endblock %}
+
+{% block body %}
+
+	<div class="row">
+
+
+		<div class="col-md-9">
+
+				<h1>DogeBounty
+<a class="pull-right" href="http://www.reddit.com/r/dogeservice/submit" onclick="window.location = 'http://www.reddit.com/r/dogeservice/submit?url=' + encodeURIComponent(window.location) + '&title=' + encodeURIComponent($('.panel-title').text()); return false"> <img src="http://www.reddit.com/static/spreddit8.gif" alt="submit to reddit" border="0" /> </a>
+</h1>
+
+{% if bounty.completed != None %}
+<div class="alert alert-danger">
+This bounty has already been awarded!!!
+</div>
+{% endif %}
+
+ {% if not bounty.funded and bounty.author == user.account %}
+        <div id="id_fund_{{bounty.pk}}" class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                  <h4 class="modal-title" id="mySmallModalLabel">Fund your Bounty</h4>
+                </div>
+                        <div class="modal-body">
+
+              Your deposit address for this bounty is: {{bounty.address}}
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+
+<div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading">
+  <h3 class="panel-title">
+  {{bounty.title}}		
+
+  			<span class="badge pull-right">Ð {{bounty.amount}}</span></div>
+
+  </h3>
+
+  <div class="panel-body">
+     
+        {% if not bounty.funded %}
+        <div class="alert alert-danger">
+        This bounty has not been funded! Click the Fund button to view the deposit address. 
+        <a href="#" class="btn btn-danger btn-xs" data-toggle="modal" data-target="#id_fund_{{bounty.pk}}">Fund</a>
+        </div>
+        {% endif %}
+  <blockquote style="margin-bottom:0;margin-top:0;border:none;">
+    {{bounty.description|linebreaks}}
+    </blockquote>
+      
+<hr/>
+
+                <button type="submit" class="btn btn-info" onclick="
+
+$('#id_redeem_dlg').show(300);return false;
+
+                ">{% trans "Redeem (or just send a message)" %}</button>
+  <div class="pull-right">
+  Created by {{bounty.author}} 		on		{{bounty.created|date:"SHORT_DATE_FORMAT" }}
+					
+					{{bounty.created|time:"H:i" }}
+  </div>
+  <div style="clear:both"><br/></div>
+{% if  user.is_authenticated %}
+  <div class="alert alert-success" style="display:none" id="id_redeem_dlg">
+   <form class="form" action="{% url "redeem_bounty"  bounty.pk %}" method="post">
+    <label for="lessonrequestmessage">
+  		If you have completed the bounty please provide proof of completion here (most probably, a link!)</label>:
+                {% csrf_token %}
+
+  	    <textarea  class="form-control" name="text" id="lessonrequestmessage"></textarea>
+<br/>
+  	    <input type="submit" value="Send" class=" btn btn-success" />
+  	    <!-- <div style="clear:both"></div> -->
+    </form>
+  </div>
+  {% else %}
+  <div class="alert alert-danger"  style="display:none" id="id_redeem_dlg">
+  You need to login to redeem a bounty!
+  </div>
+  {% endif %}
+  </div>
+  <div>
+
+
+</div>
+
+  {% if bounty.author == request.user.account or request.user.is_superuser %}
+   <ul class="list-group">
+
+    <a class="list-group-item active">List of Redeems/Messages</a>
+      {% for m in bmessages %}
+      <li class="list-group-item">
+      		<div class="pull-left">
+      		<span class=""><b>{{m.author}} says:</b></span>
+      		<blockquote {% if m.approved %}class="alert-success "{%endif%}>{{m.text|linebreaks|safe}}</blockquote>
+      		</div>
+
+      		{% if bounty.author == request.user.account and bounty.completed == None%}
+      		<a href="{% url "approve_redeem" m.pk %}" onclick="if(!confirm('Really approve this redeem? You\'ll send the funds to this user!\nThis action can not be undone!')) return false;" class="btn btn-warning pull-right">Approve and pay!</a>
+      		{% endif %}
+      		<div style="clear:both"></div>
+
+      	
+      </li>
+      {% empty %}
+      <li class="list-group-item text-danger">There are no messages yet!</li>
+      {% endfor %}
+    </ul>
+  {% else %}
+
+ <ul class="list-group">
+
+  <a class="list-group-item active">Total redeems/messages so far: {{bmessages.all.count}}</a>
+
+    {% for m in bmessages %}
+    {% if m.author == request.user.account %}
+    <li class="list-group-item">
+        <div class="pull-left">
+        <span class=""><b>{{m.author}} says:</b></span>
+        <blockquote {% if m.approved %}class="alert-success "{%endif%}>{{m.text|linebreaks|safe}}</blockquote>
+        </div>
+
+        {% if bounty.author == request.user.account and bounty.completed == None%}
+        <a href="{% url "approve_redeem" m.pk %}" onclick="if(!confirm('Really approve this redeem? You\'ll send the funds to this user!\nThis action can not be undone!')) return false;" class="btn btn-warning pull-right">Approve and pay!</a>
+        {% endif %}
+        <div style="clear:both"></div>
+
+      
+    </li>
+    {% endif %}
+    {% empty %}
+    <li class="list-group-item text-danger">You haven't posted a message yet!</li>
+    {% endfor %}
+  </ul>
+
+
+  {% endif %}
+		</div>
+
+		<div class="col-md-2">
+			<!-- <a href="{% url "new_bounty" %}" class="btn btn-success">Create New DogeBounty</a> -->
+		</div>
+	</div>
+
+{% endblock %}
+
